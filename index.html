@@ -15,6 +15,8 @@
             --card-bg: #ffffff;
             --text: #1e293b;
             --border: #e2e8f0;
+            --treadmill-bg: #fef2f2;
+            --treadmill-accent: #ef4444;
         }
 
         * {
@@ -71,167 +73,56 @@
             text-align: center;
         }
 
-        .info-card h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--secondary);
-            margin-bottom: 5px;
-        }
-
-        .info-card p {
-            font-weight: bold;
-            color: var(--primary);
-        }
+        .info-card h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--secondary); margin-bottom: 5px; }
+        .info-card p { font-weight: bold; color: var(--primary); }
 
         .goals-section {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border);
+            padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid var(--border);
         }
 
-        .goals-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
+        .tag { background: #eff6ff; color: #1e40af; padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #dbeafe; margin: 2px; display: inline-block; }
 
-        .goal-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .tag {
-            background: #eff6ff;
-            color: #1e40af;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            border: 1px solid #dbeafe;
-        }
-
-        .schedule-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .schedule-list { display: flex; flex-direction: column; gap: 10px; }
 
         .task-item {
             background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            padding: 15px; border-radius: 12px; border: 1px solid var(--border);
+            display: flex; align-items: center; transition: all 0.3s ease; position: relative; overflow: hidden;
         }
 
         .task-item.active {
-            border-color: var(--primary);
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-            transform: translateX(10px);
-            background: #f0f7ff;
+            border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            transform: translateX(10px); background: #f0f7ff;
         }
 
-        .task-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 5px;
-            background: var(--primary);
+        .task-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--primary); }
+
+        .treadmill-breakdown {
+            margin-top: 10px; padding: 10px; background: var(--treadmill-bg); border-radius: 8px; display: none; width: 100%;
         }
 
-        .task-time {
-            min-width: 110px;
-            font-weight: bold;
-            color: var(--secondary);
-            font-variant-numeric: tabular-nums;
-        }
+        .task-item.active .treadmill-breakdown { display: block; }
 
-        .task-content {
-            flex-grow: 1;
-        }
+        .tm-step { font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; display: flex; justify-content: space-between; margin-bottom: 2px; color: #991b1b; }
+        .tm-step.now { background: var(--treadmill-accent); color: white; font-weight: bold; }
 
-        .task-title {
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .task-sub {
-            font-size: 0.85rem;
-            color: var(--secondary);
-            margin-top: 2px;
-        }
+        .task-time { min-width: 110px; font-weight: bold; color: var(--secondary); font-variant-numeric: tabular-nums; }
+        .task-title { font-weight: 600; color: var(--text); }
+        .task-sub { font-size: 0.85rem; color: var(--secondary); margin-top: 2px; }
 
         .upcoming-label {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7rem;
-            background: var(--accent);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-weight: bold;
-            display: none;
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; background: var(--success); color: white; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold; display: none;
         }
 
-        .task-item.active .upcoming-label {
-            display: block;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
+        .task-item.active .upcoming-label { display: block; animation: pulse 2s infinite; }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            color: var(--secondary);
-            font-size: 0.9rem;
-        }
-
-        .october-alert {
-            margin-top: 15px;
-            background: #fffbeb;
-            border: 1px solid #fef3c7;
-            color: #92400e;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
         @media (max-width: 600px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            .task-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .task-time {
-                margin-bottom: 5px;
-            }
-            .task-item.active {
-                transform: none;
-            }
+            .info-grid { grid-template-columns: 1fr; }
+            .task-item { flex-direction: column; align-items: flex-start; }
+            .task-item.active { transform: none; }
         }
     </style>
 </head>
@@ -241,122 +132,69 @@
     <header>
         <h1>Digital Study Schedule</h1>
         <div id="phase-badge" class="status-badge">Detecting Phase...</div>
-        
         <div class="info-grid">
-            <div class="info-card">
-                <h3>Current Time</h3>
-                <p id="clock">00:00:00</p>
-            </div>
-            <div class="info-card">
-                <h3>Current Date</h3>
-                <p id="date-display">--/--/--</p>
-            </div>
-        </div>
-
-        <div class="october-alert">
-            <i class="fas fa-calendar-check"></i>
-            <span>Reminder: Open External File (תיק אקסטרני) in <strong>October 2026</strong></span>
+            <div class="info-card"><h3>Time</h3><p id="clock">00:00:00</p></div>
+            <div class="info-card"><h3>Date</h3><p id="date-display">--/--/--</p></div>
         </div>
     </header>
 
-    <section class="goals-section">
-        <div class="goals-title">
-            <i class="fas fa-bullseye"></i>
-            <h2>Bagrut Goals</h2>
-        </div>
-        <div style="margin-bottom: 15px;">
-            <strong style="font-size: 0.9rem; color: var(--secondary);">WINTER (JAN/FEB)</strong>
-            <div class="goal-tags">
-                <span class="tag">English 5U</span>
-                <span class="tag">Hebrew 2U</span>
-                <span class="tag">Bible 2U</span>
-                <span class="tag">History 2U</span>
-            </div>
-        </div>
-        <div>
-            <strong style="font-size: 0.9rem; color: var(--secondary);">SUMMER (MAY/JUN)</strong>
-            <div class="goal-tags">
-                <span class="tag">Math 5U</span>
-                <span class="tag">Physics 5U</span>
-            </div>
-        </div>
+    <div id="schedule-container" class="schedule-list"></div>
+
+    <section class="goals-section" style="margin-top: 25px;">
+        <h2 style="font-size: 1.1rem; margin-bottom: 10px;">Bagrut Goals</h2>
+        <div class="tag">English 5U</div> <div class="tag">Hebrew 2U</div> <div class="tag">Bible 2U</div>
+        <div class="tag">History 2U</div> <div class="tag">Math 5U</div> <div class="tag">Physics 5U</div>
     </section>
 
-    <div id="schedule-container" class="schedule-list">
-        <!-- Schedule items will be injected here by JS -->
-    </div>
-
-    <footer>
-        <p>&copy; 2026 Bagrut Preparation System</p>
+    <footer style="margin-top: 30px; text-align: center; color: var(--secondary); font-size: 0.8rem; padding-bottom: 20px;">
+        October 2026: Open External File (תיק אקסטרני)
     </footer>
 </div>
 
 <script>
     const scheduleData = [
         { start: "07:30", end: "08:10", title: "Prayer", sub: "Start the day with focus" },
-        { start: "08:10", end: "08:20", title: "Short break", sub: "Stretch and refresh" },
-        { start: "08:20", end: "09:00", title: "Breakfast", sub: "Fuel up for the day" },
-        { start: "09:00", end: "10:00", title: "Free / Light Start", sub: "Get ready for learning" },
+        { start: "08:10", end: "08:20", title: "Short break", sub: "Stretch" },
+        { start: "08:20", end: "09:00", title: "Breakfast", sub: "Fuel up" },
+        { start: "09:00", end: "10:00", title: "Free / Get Ready", sub: "Transition to study" },
         { start: "10:00", end: "11:30", title: "Math (Learning)", sub: "Khan Academy - New Topic" },
         { start: "11:30", end: "11:40", title: "Break", sub: "Quick rest" },
         { start: "11:40", end: "12:30", title: "Math (Practice)", sub: "Math Gemini - Same Topic" },
-        { start: "12:30", end: "13:10", title: "Treadmill", sub: "Exercise session" },
-        { start: "13:10", end: "13:45", title: "Lunch", sub: "Midday break" },
-        { start: "13:45", end: "14:45", title: "Math (Fix Mistakes)", sub: "Redo errors & strengthen weak areas" },
+        { start: "12:30", end: "13:10", title: "Treadmill", sub: "Exercise Session", isTreadmill: true },
+        { start: "13:10", end: "13:45", title: "Lunch", sub: "Midday meal" },
+        { start: "13:45", end: "14:45", title: "Math (Fix Mistakes)", sub: "Redo errors" },
         { start: "14:45", end: "15:00", title: "Break", sub: "Quick rest" },
-        { start: "15:00", end: "16:15", title: "Rotating Subject", sub: "Dynamic - See day" },
+        { start: "15:00", end: "16:15", title: "Rotating Subject", sub: "Check Phase/Day" },
         { start: "16:15", end: "17:00", title: "Fix Mistakes", sub: "From second subject" }
     ];
 
-    const rotatingPhase1 = {
-        0: "English", // Sunday
-        1: "Hebrew",  // Monday
-        2: "English", // Tuesday
-        3: "תנ\"ך",   // Wednesday
-        4: "History"  // Thursday
-    };
+    const treadmillIntervals = [
+        { start: "12:30", end: "12:35", label: "Warm-up", speed: "3.5–4.0 km/h" },
+        { start: "12:35", end: "12:45", label: "Light walk", speed: "4.8–5.2 km/h" },
+        { start: "12:45", end: "12:55", label: "Brisk walk", speed: "5.8–6.3 km/h" },
+        { start: "12:55", end: "13:05", label: "Slow down", speed: "4.5–5.0 km/h" },
+        { start: "13:05", end: "13:10", label: "Cooldown", speed: "4.0 km/h" }
+    ];
 
-    const rotatingPhase2 = {
-        0: "English", // Sunday
-        1: "Hebrew",  // Monday
-        2: "History", // Tuesday
-        3: "תנ\"ך",   // Wednesday
-        4: "Physics"  // Thursday
-    };
+    const rotatingPhase1 = { 0: "English", 1: "Hebrew", 2: "English", 3: "תנ\"ך", 4: "History" };
+    const rotatingPhase2 = { 0: "English", 1: "Hebrew", 2: "History", 3: "תנ\"ך", 4: "Physics" };
 
     function updateApp() {
         const now = new Date();
-        const day = now.getDay(); // 0 is Sunday
+        const day = now.getDay();
         const timeStr = now.toTimeString().substring(0, 5);
         
-        // Display clock
         document.getElementById('clock').innerText = now.toLocaleTimeString();
-        document.getElementById('date-display').innerText = now.toLocaleDateString();
+        document.getElementById('date-display').innerText = now.toLocaleDateString('en-GB');
 
-        // Phase Logic
-        const phase1Start = new Date('2026-04-18');
-        const phase1End = new Date('2026-05-28');
-        const phase2Start = new Date('2026-05-31');
-        const phase2End = new Date('2026-08-06');
+        const p1Start = new Date('2026-04-18');
+        const p1End = new Date('2026-05-28');
+        const p2Start = new Date('2026-05-31');
+        const p2End = new Date('2026-08-06');
 
         let phase = 1;
-        const phaseBadge = document.getElementById('phase-badge');
-
-        if (now >= phase1Start && now <= phase1End) {
-            phase = 1;
-            phaseBadge.innerText = "PHASE 1 (APR 18 - MAY 28)";
-        } else if (now >= phase2Start && now <= phase2End) {
-            phase = 2;
-            phaseBadge.innerText = "PHASE 2 (MAY 31 - AUG 06)";
-        } else if (now > phase1End && now < phase2Start) {
-            phaseBadge.innerText = "TRANSITION PERIOD";
-            phase = 1; // Default to P1 layout during gap
-        } else if (now < phase1Start) {
-            phaseBadge.innerText = "PRE-PHASE 1";
-            phase = 1;
-        } else {
-            phaseBadge.innerText = "SCHEDULE COMPLETE";
-        }
+        if (now >= p2Start && now <= p2End) { phase = 2; document.getElementById('phase-badge').innerText = "PHASE 2"; }
+        else { document.getElementById('phase-badge').innerText = "PHASE 1"; }
 
         const rotating = phase === 1 ? rotatingPhase1 : rotatingPhase2;
         const container = document.getElementById('schedule-container');
@@ -364,46 +202,44 @@
 
         scheduleData.forEach(task => {
             const isActive = timeStr >= task.start && timeStr < task.end;
-            
             let displayTitle = task.title;
-            let displaySub = task.sub;
-
-            // Handle rotating subject slot
-            if (task.title === "Rotating Subject") {
-                const subject = rotating[day] || "Rest / Review";
-                displayTitle = `Rotating: ${subject}`;
-                displaySub = `Specific focus for ${new Intl.DateTimeFormat('en-US', {weekday: 'long'}).format(now)}`;
-            }
+            if (task.title === "Rotating Subject") displayTitle = rotating[day] || "Self Study";
 
             const item = document.createElement('div');
             item.className = `task-item ${isActive ? 'active' : ''}`;
+            
+            let treadmillHTML = '';
+            if (task.isTreadmill) {
+                treadmillHTML = `<div class="treadmill-breakdown">`;
+                treadmillIntervals.forEach(step => {
+                    const isStepActive = timeStr >= step.start && timeStr < step.end;
+                    treadmillHTML += `<div class="tm-step ${isStepActive ? 'now' : ''}">
+                        <span>${step.start} ${step.label}</span>
+                        <span>${step.speed}</span>
+                    </div>`;
+                });
+                treadmillHTML += `</div>`;
+            }
+
             item.innerHTML = `
                 <div class="task-time">${task.start} – ${task.end}</div>
                 <div class="task-content">
                     <div class="task-title">${displayTitle}</div>
-                    <div class="task-sub">${displaySub}</div>
+                    <div class="task-sub">${task.sub}</div>
+                    ${treadmillHTML}
                 </div>
-                <div class="upcoming-label">${isActive ? 'Current' : ''}</div>
+                <div class="upcoming-label">Active</div>
             `;
             container.appendChild(item);
         });
 
-        // Sunday through Thursday are work days in Israel
         if (day === 5 || day === 6) {
-            container.innerHTML = `
-                <div class="info-card" style="width: 100%; padding: 40px;">
-                    <i class="fas fa-couch" style="font-size: 2rem; color: var(--secondary); margin-bottom: 15px;"></i>
-                    <h3>Weekend Mode</h3>
-                    <p>Take a break and recharge for next week!</p>
-                </div>
-            `;
+            container.innerHTML = `<div class="info-card" style="width: 100%; padding: 40px;"><h3>Shabbat Shalom</h3><p>Enjoy your rest!</p></div>`;
         }
     }
 
-    // Update every second
     setInterval(updateApp, 1000);
     updateApp();
 </script>
-
 </body>
 </html>
