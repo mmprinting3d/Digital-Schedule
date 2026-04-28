@@ -11,6 +11,8 @@
             --secondary: #64748b;
             --accent: #f59e0b;
             --success: #10b981;
+            --free-day: #ec4899;
+            --rest: #94a3b8;
             --bg: #f1f5f9;
             --card-bg: #ffffff;
             --text: #0f172a;
@@ -40,19 +42,41 @@
             text-align: center;
             margin-bottom: 25px;
             background: var(--card-bg);
-            padding: 25px 20px;
+            padding: 30px 20px 25px 20px;
             border-radius: 24px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
+            position: relative;
         }
 
         h1 {
             font-size: 1.5rem;
             color: var(--primary);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        /* Toggle Styling */
+        .sound-control {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #f1f5f9;
+        }
+
+        .sound-control.enabled {
+            color: var(--success);
+            background: #ecfdf5;
+        }
+
         .mode-selector {
             display: flex;
             background: #e2e8f0;
@@ -60,16 +84,18 @@
             border-radius: 12px;
             margin-bottom: 20px;
             gap: 4px;
+            flex-wrap: wrap;
         }
 
         .mode-btn {
             flex: 1;
+            min-width: 80px;
             border: none;
             padding: 8px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             transition: all 0.2s ease;
             color: var(--secondary);
             background: transparent;
@@ -158,7 +184,7 @@
         }
 
         .task-time {
-            min-width: 100px;
+            min-width: 110px;
             font-weight: 700;
             color: var(--secondary);
             font-size: 0.9rem;
@@ -192,18 +218,25 @@
             animation: blink 1.5s infinite;
         }
 
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 24px;
+            border: 1px dashed var(--border);
+            color: var(--secondary);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--rest);
+        }
+
         @keyframes blink {
             0% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(1.2); }
             100% { opacity: 1; transform: scale(1); }
-        }
-
-        .weekend-card {
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--card-bg);
-            border-radius: 24px;
-            border: 1px dashed var(--secondary);
         }
 
         @media (max-width: 500px) {
@@ -221,12 +254,17 @@
 
 <div class="container">
     <header>
+        <div id="sound-toggle" class="sound-control" title="Toggle Notification Sound">
+            <i id="sound-icon" class="fas fa-bell-slash"></i>
+        </div>
+
         <h1>Personal Productivity</h1>
         
         <div class="mode-selector">
-            <button class="mode-btn active" id="btn-auto" onclick="setMode('auto')">Auto</button>
-            <button class="mode-btn" id="btn-driving" onclick="setMode('driving')">Driving Mode</button>
-            <button class="mode-btn" id="btn-work" onclick="setMode('work')">Work Mode</button>
+            <button class="mode-btn active" id="btn-auto">Auto</button>
+            <button class="mode-btn" id="btn-driving">Driving</button>
+            <button class="mode-btn" id="btn-work">Work</button>
+            <button class="mode-btn" id="btn-free">Free Day</button>
         </div>
 
         <div id="day-badge" class="day-type-badge">Checking...</div>
@@ -251,90 +289,140 @@
 </div>
 
 <script>
-    // 'auto', 'driving', or 'work'
     let currentMode = 'auto';
+    let lastActiveTask = null;
+    let lastProcessedMinute = -1;
+    let soundEnabled = false;
+    let audioCtx = null;
 
-    const scheduleSunWed = [
-        { start: "07:30", end: "08:10", title: "Shacharit" },
-        { start: "08:10", end: "08:20", title: "Walk" },
-        { start: "08:20", end: "09:00", title: "Breakfast" },
-        { start: "09:00", end: "10:30", title: "Math (Learning)" },
-        { start: "10:30", end: "10:45", title: "Break" },
-        { start: "10:45", end: "11:45", title: "Math (Practice)" },
-        { start: "11:45", end: "12:05", title: "Handwriting" },
-        { start: "12:05", end: "12:30", title: "Lunch" },
-        { start: "12:30", end: "13:30", title: "Admin / Prep" },
-        { start: "13:30", end: "14:00", title: "Travel" },
-        { start: "14:00", end: "15:20", title: "Driving Lesson" },
-        { start: "15:20", end: "15:50", title: "Travel Home" },
-        { start: "16:00", end: "17:00", title: "Arduino (Build / Learn)" },
-        { start: "17:00", end: "17:30", title: "Arduino (Improve / Fix)" }
-    ];
-
-    const scheduleMonTueThu = [
-        { start: "07:30", end: "08:10", title: "Shacharit" },
-        { start: "08:10", end: "08:20", title: "Walk" },
-        { start: "08:20", end: "09:00", title: "Breakfast" },
-        { start: "09:00", end: "10:15", title: "Math (Learning)" },
-        { start: "10:15", end: "10:25", title: "Break" },
-        { start: "10:25", end: "11:20", title: "Math (Practice)" },
-        { start: "11:20", end: "11:40", title: "Handwriting" },
-        { start: "11:40", end: "12:10", title: "Math (Fix Mistakes)" },
-        { start: "12:10", end: "12:40", title: "Lunch / Get Ready" },
-        { start: "13:00", end: "20:00", title: "Work" }
-    ];
-
-    function setMode(mode) {
-        currentMode = mode;
-        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`btn-${mode}`).classList.add('active');
-        updateApp();
+    function toMinutes(timeStr) {
+        const [h, m] = timeStr.split(':').map(Number);
+        return h * 60 + m;
     }
 
-    function updateApp() {
+    function playBell() {
+        if (!soundEnabled) return;
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playNote(freq, start, duration, volume) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(volume, start + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(start);
+            osc.stop(start + duration);
+        }
+
+        const now = audioCtx.currentTime;
+        playNote(659.25, now, 0.8, 0.4);      
+        playNote(880.00, now + 0.12, 1.0, 0.3);
+    }
+
+    const schedules = {
+        driving: {
+            label: "Driving Lesson Day",
+            color: "var(--accent)",
+            days: [0, 3], // Sun, Wed
+            tasks: [
+                { start: "07:30", end: "08:15", title: "Shacharit" },
+                { start: "08:15", end: "09:00", title: "Morning Routine + Breakfast" },
+                { start: "09:00", end: "10:30", title: "Math (Deep Work)" },
+                { start: "10:30", end: "11:00", title: "Break" },
+                { start: "11:00", end: "12:00", title: "Math (Practice)" },
+                { start: "12:00", end: "12:30", title: "Lunch" },
+                { start: "12:30", end: "13:15", title: "Handwriting" },
+                { start: "13:15", end: "13:30", title: "Buffer" },
+                { start: "13:30", end: "15:50", title: "Driving Lesson" }
+            ]
+        },
+        work: {
+            label: "Work Day",
+            color: "var(--primary)",
+            days: [1, 2, 4], // Mon, Tue, Thu
+            tasks: [
+                { start: "07:30", end: "08:15", title: "Shacharit" },
+                { start: "08:15", end: "15:15", title: "Work" },
+                { start: "15:15", end: "16:00", title: "Full Rest" },
+                { start: "16:00", end: "17:00", title: "Math" },
+                { start: "17:00", end: "17:20", title: "Break" },
+                { start: "17:20", end: "18:00", title: "Handwriting" },
+                { start: "18:00", end: "19:00", title: "Dishes + Shiur" }
+            ]
+        },
+        free: {
+            label: "Free Day Schedule",
+            color: "var(--free-day)",
+            days: [], // Manual trigger mainly
+            tasks: [
+                { start: "07:30", end: "08:15", title: "Shacharit" },
+                { start: "08:15", end: "09:00", title: "Morning Routine + Breakfast" },
+                { start: "09:00", end: "10:30", title: "Math (Deep Work)" },
+                { start: "10:30", end: "11:00", title: "Break" },
+                { start: "11:00", end: "12:00", title: "Math (Practice)" },
+                { start: "12:00", end: "12:30", title: "Lunch" },
+                { start: "12:30", end: "13:00", title: "English Handwriting" },
+                { start: "13:00", end: "13:30", title: "Break" },
+                { start: "13:30", end: "14:30", title: "Hebrew Handwriting" }
+            ]
+        }
+    };
+
+    function updateApp(forceRebuild = false) {
         const now = new Date();
+        const currentMinute = now.getHours() * 60 + now.getMinutes();
         const day = now.getDay(); 
-        const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
         
         document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
         document.getElementById('date-display').innerText = now.toLocaleDateString('en-GB');
 
+        if (currentMinute === lastProcessedMinute && !forceRebuild) return;
+        lastProcessedMinute = currentMinute;
+
         const badge = document.getElementById('day-badge');
         const container = document.getElementById('schedule-container');
-        let currentSchedule = [];
-        let forceDriving = currentMode === 'driving';
-        let forceWork = currentMode === 'work';
+        
+        let configKey = currentMode;
+        if (currentMode === 'auto') {
+            if (day === 5 || day === 6) configKey = 'rest'; // Fri, Sat
+            else if (schedules.driving.days.includes(day)) configKey = 'driving';
+            else if (schedules.work.days.includes(day)) configKey = 'work';
+            else configKey = 'free';
+        }
 
-        // Auto Logic: (0=Sun, 3=Wed for Driving) | (1, 2, 4 for Work)
-        const isDrivingDay = forceDriving || (currentMode === 'auto' && (day === 0 || day === 3));
-        const isWorkDay = forceWork || (currentMode === 'auto' && (day === 1 || day === 2 || day === 4));
-
-        if (isDrivingDay) {
-            badge.innerText = "Driving Lesson Day";
-            badge.style.background = "var(--accent)";
-            currentSchedule = scheduleSunWed;
-        } else if (isWorkDay) {
-            badge.innerText = "Work Day";
-            badge.style.background = "var(--primary)";
-            currentSchedule = scheduleMonTueThu;
-        } else {
-            badge.innerText = "Weekend / Rest Day";
-            badge.style.background = "var(--secondary)";
+        if (configKey === 'rest') {
+            badge.innerText = "Shabbat / Rest Day";
+            badge.style.background = "var(--rest)";
             container.innerHTML = `
-                <div class="weekend-card">
-                    <i class="fas fa-calendar-day" style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;"></i>
-                    <h2>Rest & Recharge</h2>
-                    <p style="color: var(--secondary);">No active schedule for today. Enjoy your weekend!</p>
+                <div class="empty-state">
+                    <i class="fas fa-couch"></i>
+                    <h3>No scheduled tasks today</h3>
+                    <p>Time to rest and recharge.</p>
                 </div>`;
+            lastActiveTask = null;
             return;
         }
 
+        const activeConfig = schedules[configKey];
+        badge.innerText = activeConfig.label;
+        badge.style.background = activeConfig.color;
+
         container.innerHTML = '';
-        currentSchedule.forEach(task => {
-            const isActive = timeStr >= task.start && timeStr < task.end;
+        let foundActiveTask = null;
+
+        activeConfig.tasks.forEach(task => {
+            const startMins = toMinutes(task.start);
+            const endMins = toMinutes(task.end);
+            const isActive = currentMinute >= startMins && currentMinute < endMins;
+            
+            if (isActive) foundActiveTask = task.title;
+
             const item = document.createElement('div');
             item.className = `task-item ${isActive ? 'active' : ''}`;
-            
             item.innerHTML = `
                 <div class="task-time">${task.start} – ${task.end}</div>
                 <div class="task-content">
@@ -344,11 +432,41 @@
             `;
             container.appendChild(item);
         });
+
+        if (foundActiveTask !== lastActiveTask) {
+            if (lastActiveTask !== null && foundActiveTask !== null) {
+                playBell();
+            }
+            lastActiveTask = foundActiveTask;
+        }
     }
 
-    setInterval(updateApp, 1000);
-    updateApp();
-</script>
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        const icon = document.getElementById('sound-icon');
+        const toggle = document.getElementById('sound-toggle');
+        
+        if (soundEnabled) {
+            icon.className = 'fas fa-bell';
+            toggle.classList.add('enabled');
+            playBell();
+        } else {
+            icon.className = 'fas fa-bell-slash';
+            toggle.classList.remove('enabled');
+        }
+    });
 
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentMode = btn.id.replace('btn-', '');
+            updateApp(true);
+        });
+    });
+
+    setInterval(() => updateApp(false), 1000);
+    updateApp(true);
+</script>
 </body>
 </html>
